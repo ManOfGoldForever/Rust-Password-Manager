@@ -1,0 +1,8 @@
+# .gitignore
+/target
+target/
+Cargo.lock
+*.hash
+*.bin
+*.enc
+*.json
