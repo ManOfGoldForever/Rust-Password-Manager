@@ -4,6 +4,8 @@ mod storage;
 use args::{Cli, Commands};
 use clap::Parser;
 use rpassword::read_password;
+use std::io::Write;
+use zeroize::Zeroize;
 
 fn main() {
     let cli: Cli = Cli::parse();
@@ -13,55 +15,62 @@ fn main() {
 
     let encryption_salt = storage::get_or_create_salt(salt_path);
 
-    let encryption_key: [u8; 32];
+    let mut encryption_key = if !std::path::Path::new(master_hash_path).exists() {
+        print!("No master password found. Setup required.\n");
+        print!("Enter New Master Password: ");
+        std::io::stdout().flush().expect("Flush failed");
+        let mut masterp1 = read_password().expect("Failed to read password");
 
-    if !std::path::Path::new(master_hash_path).exists() {
-        print!("Enter Master Password : ");
-        std::io::Write::flush(&mut std::io::stdout()).expect("Flush failed");
-        let masterp1 = read_password().expect("Failed to read password");
-
-        print!("Confirm Master Password : ");
-        std::io::Write::flush(&mut std::io::stdout()).expect("Flush failed");
-        let masterp2 = read_password().expect("Failed to read password");
+        print!("Confirm Master Password: ");
+        std::io::stdout().flush().expect("Flush failed");
+        let mut masterp2 = read_password().expect("Failed to read password");
 
         if masterp1 == masterp2 {
             println!("Creating new Master Password...");
             let hash = storage::hash_master_password(&masterp1);
             std::fs::write(master_hash_path, hash).expect("Failed to save hash");
-            encryption_key = storage::derive_key(&masterp1, &encryption_salt);
+            masterp2.zeroize();
+            storage::derive_key(&mut masterp1, &encryption_salt)
         } else {
-            println!("Passwords did not match! Please try again.");
-            return;
+            masterp1.zeroize();
+            masterp2.zeroize();
+            panic!("Passwords did not match!");
         }
     } else {
         print!("Enter Master Password: ");
-        std::io::Write::flush(&mut std::io::stdout()).expect("Flush failed");
-        let input = read_password().expect("Read failed");
+        std::io::stdout().flush().expect("Flush failed");
+        let mut input = read_password().expect("Read failed");
         let saved_hash = std::fs::read_to_string(master_hash_path).expect("Failed to read hash");
+
         if !storage::verify_master_password(&input, &saved_hash) {
+            input.zeroize();
             println!("Wrong Master Password! Access Denied.");
             return;
         }
-        encryption_key = storage::derive_key(&input, &encryption_salt);
-    }
+        storage::derive_key(&mut input, &encryption_salt)
+    };
 
     let mut passwords = storage::load_passwords(file_path, &encryption_key);
 
     match &cli.command {
         Commands::Add(args) => {
             print!("Enter password for {} : ", args.name);
-            std::io::Write::flush(&mut std::io::stdout()).expect("Flush failed");
-            let p1 = read_password().expect("Failed to read password");
+            std::io::stdout().flush().expect("Flush failed");
+            let mut p1 = read_password().expect("Failed to read password");
+
             print!("Confirm Password : ");
-            std::io::Write::flush(&mut std::io::stdout()).expect("Flush failed");
-            let p2 = read_password().expect("Failed to read password");
+            std::io::stdout().flush().expect("Flush failed");
+            let mut p2 = read_password().expect("Failed to read password");
+
             if p1 == p2 {
-                passwords.insert(args.name.clone(), p1);
+                passwords.insert(args.name.clone(), p1.clone());
                 storage::save_passwords(file_path, &passwords, &encryption_key);
                 println!("Saved successfully!");
             } else {
-                println!("Passwords did not match! Please try again.");
+                println!("Passwords did not match!");
             }
+            p1.zeroize();
+            p2.zeroize();
         }
         Commands::Get(args) => match passwords.get(&args.name) {
             Some(pw) => println!("Password for {} : {}", args.name, pw),
@@ -80,6 +89,12 @@ fn main() {
                 }
                 println!("-----------------------");
             }
-        } // _ => {}
+        }
+    }
+
+    encryption_key.zeroize();
+
+    for (_, v) in passwords.iter_mut() {
+        v.zeroize();
     }
 }

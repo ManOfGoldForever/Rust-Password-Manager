@@ -10,6 +10,7 @@ use chacha20poly1305::{
 };
 use std::collections::HashMap;
 use std::fs;
+use zeroize::Zeroize;
 
 pub fn get_or_create_salt(path: &str) -> String {
     if std::path::Path::new(path).exists() {
@@ -24,7 +25,7 @@ pub fn get_or_create_salt(path: &str) -> String {
     }
 }
 
-pub fn derive_key(password: &str, salt: &str) -> [u8; 32] {
+pub fn derive_key(password: &mut String, salt: &str) -> [u8; 32] {
     let mut key = [0u8; 32];
     let argon2 = Argon2::default();
 
@@ -43,7 +44,7 @@ pub fn derive_key(password: &str, salt: &str) -> [u8; 32] {
     } else {
         panic!("Argon2 output too short! We need 32 bytes.");
     }
-
+    password.zeroize();
     key
 }
 
@@ -60,16 +61,19 @@ pub fn load_passwords(path: &str, key: &[u8; 32]) -> HashMap<String, String> {
     let nonce = XNonce::from_slice(nonce_bytes);
 
     let cipher = XChaCha20Poly1305::new(key.into());
-    let plaintext = cipher
+    let mut plaintext = cipher
         .decrypt(nonce, ciphertext)
         .expect("Decryption failed! Data corrupted or wrong key.");
 
-    let json_string = String::from_utf8(plaintext).expect("Invalid UTF-8");
-    serde_json::from_str(&json_string).unwrap_or_default()
+    let mut json_string = String::from_utf8(plaintext.clone()).expect("Invalid UTF-8");
+    let passwords = serde_json::from_str(&json_string).unwrap_or_default();
+    plaintext.zeroize();
+    json_string.zeroize();
+    passwords
 }
 
 pub fn save_passwords(path: &str, data: &HashMap<String, String>, key: &[u8; 32]) {
-    let json = serde_json::to_string(data).expect("Failed to serialize");
+    let mut json = serde_json::to_string(data).expect("Failed to serialize");
 
     let cipher = XChaCha20Poly1305::new(key.into());
     let nonce = XChaCha20Poly1305::generate_nonce(&mut OsRng);
@@ -77,6 +81,8 @@ pub fn save_passwords(path: &str, data: &HashMap<String, String>, key: &[u8; 32]
     let ciphertext = cipher
         .encrypt(&nonce, json.as_bytes())
         .expect("Encryption failed");
+
+    json.zeroize();
 
     let mut combined = nonce.to_vec();
     combined.extend(ciphertext);
