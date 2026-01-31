@@ -5,18 +5,38 @@ use args::{Cli, Commands};
 use clap::Parser;
 use rpassword::read_password;
 use std::io::Write;
+use std::path::PathBuf;
 use zeroize::Zeroize;
 
 fn main() {
     let cli: Cli = Cli::parse();
 
-    let master_hash_path = "master.hash";
-    let file_path = "passwords.enc";
-    let salt_path = "salt.bin";
+    let home_str = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .expect("Could not find home directory");
 
-    let encryption_salt = storage::get_or_create_salt(salt_path);
+    let mut config_dir = PathBuf::from(home_str);
+    config_dir.push(".my_pass_manager");
 
-    let mut encryption_key = if !std::path::Path::new(master_hash_path).exists() {
+    if let Err(e) = std::fs::create_dir_all(&config_dir) {
+        eprintln!(
+            "Error: Could not create config directory at {:?}: {}",
+            config_dir, e
+        );
+        return;
+    }
+
+    let master_hash_path = config_dir.join("master.hash");
+    let file_path = config_dir.join("passwords.enc");
+    let salt_path = config_dir.join("salt.bin");
+
+    let master_hash_str = master_hash_path.to_str().expect("Invalid path");
+    let file_str = file_path.to_str().expect("Invalid path");
+    let salt_str = salt_path.to_str().expect("Invalid path");
+
+    let encryption_salt = storage::get_or_create_salt(salt_str);
+
+    let mut encryption_key = if !master_hash_path.exists() {
         print!("No master password found. Setup required.\n");
         print!("Enter New Master Password: ");
         std::io::stdout().flush().expect("Flush failed");
@@ -29,7 +49,8 @@ fn main() {
         if masterp1 == masterp2 {
             println!("Creating new Master Password...");
             let hash = storage::hash_master_password(&masterp1);
-            std::fs::write(master_hash_path, hash).expect("Failed to save hash");
+
+            std::fs::write(master_hash_str, hash).expect("Failed to save hash");
             masterp2.zeroize();
             storage::derive_key(&mut masterp1, &encryption_salt)
         } else {
@@ -41,7 +62,8 @@ fn main() {
         print!("Enter Master Password: ");
         std::io::stdout().flush().expect("Flush failed");
         let mut input = read_password().expect("Read failed");
-        let saved_hash = std::fs::read_to_string(master_hash_path).expect("Failed to read hash");
+
+        let saved_hash = std::fs::read_to_string(master_hash_str).expect("Failed to read hash");
 
         if !storage::verify_master_password(&input, &saved_hash) {
             input.zeroize();
@@ -51,7 +73,7 @@ fn main() {
         storage::derive_key(&mut input, &encryption_salt)
     };
 
-    let mut passwords = storage::load_passwords(file_path, &encryption_key);
+    let mut passwords = storage::load_passwords(file_str, &encryption_key);
 
     match &cli.command {
         Commands::Add(args) => {
@@ -65,7 +87,7 @@ fn main() {
 
             if p1 == p2 {
                 passwords.insert(args.name.clone(), p1.clone());
-                storage::save_passwords(file_path, &passwords, &encryption_key);
+                storage::save_passwords(file_str, &passwords, &encryption_key);
                 println!("Saved successfully!");
             } else {
                 println!("Passwords did not match!");
@@ -78,7 +100,7 @@ fn main() {
             None => println!("No password found for '{}'", args.name),
         },
         Commands::Delete(args) => {
-            storage::delete_password(file_path, &args.name, &encryption_key);
+            storage::delete_password(file_str, &args.name, &encryption_key);
         }
         Commands::List => {
             if passwords.is_empty() {
