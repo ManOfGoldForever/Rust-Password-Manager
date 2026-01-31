@@ -18,9 +18,6 @@ pub enum Commands {
     Delete(DeletePass),
     /// Lists the names of all created passwords
     List,
-    /// Internal use only: clears clipboard after delay
-    #[command(hide = true)]
-    CleanupClipboard { delay: u64 },
 }
 
 #[derive(Args)]

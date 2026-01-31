@@ -10,14 +10,6 @@ use zeroize::Zeroize;
 fn main() {
     let cli: Cli = Cli::parse();
 
-    if let Commands::CleanupClipboard { delay } = cli.command {
-        std::thread::sleep(std::time::Duration::from_secs(delay));
-        if let Ok(mut cb) = arboard::Clipboard::new() {
-            let _ = cb.set_text("");
-        }
-        return;
-    }
-
     let master_hash_path = "master.hash";
     let file_path = "passwords.enc";
     let salt_path = "salt.bin";
@@ -82,34 +74,7 @@ fn main() {
             p2.zeroize();
         }
         Commands::Get(args) => match passwords.get(&args.name) {
-            Some(pw) => {
-                if args.copy {
-                    match arboard::Clipboard::new() {
-                        Ok(mut clipboard) => {
-                            let mut temp_pw = pw.clone();
-                            if clipboard.set_text(&temp_pw).is_ok() {
-                                println!("Password for '{}' copied to clipboard!", args.name);
-                                println!("Clipboard will be cleared in 15 seconds...");
-                                temp_pw.zeroize();
-
-                                let exe_path =
-                                    std::env::current_exe().expect("Failed to get exe path");
-                                std::process::Command::new(exe_path)
-                                    .arg("cleanup-clipboard")
-                                    .arg("15")
-                                    .spawn()
-                                    .expect("Failed to start background cleanup");
-                            } else {
-                                temp_pw.zeroize();
-                                println!("❌ Failed to copy to clipboard.");
-                            }
-                        }
-                        Err(_) => println!("❌ Failed to access clipboard."),
-                    }
-                } else {
-                    println!("Password for {} : {}", args.name, pw);
-                }
-            }
+            Some(pw) => println!("Password for {} : {}", args.name, pw),
             None => println!("No password found for '{}'", args.name),
         },
         Commands::Delete(args) => {
@@ -126,7 +91,6 @@ fn main() {
                 println!("-----------------------");
             }
         }
-        Commands::CleanupClipboard { .. } => {}
     }
 
     encryption_key.zeroize();
