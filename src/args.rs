@@ -18,6 +18,9 @@ pub enum Commands {
     Delete(DeletePass),
     /// Lists the names of all created passwords
     List,
+    /// Internal use only: clears clipboard after delay
+    #[command(hide = true)]
+    CleanupClipboard { delay: u64 },
 }
 
 #[derive(Args)]
@@ -30,6 +33,9 @@ pub struct AddPass {
 pub struct GetPass {
     /// The name of the password to get
     pub name: String,
+    /// Copy the password to the clipboard instead of printing it
+    #[arg(short, long)]
+    pub copy: bool,
 }
 
 #[derive(Args)]
