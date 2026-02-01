@@ -11,6 +11,7 @@ A fast, secure, and lightweight password manager CLI built entirely in Rust. No 
 - [Usage](#usage)
 - [Security and Data](#security-and-data)
 - [Future Plans](#future-plans)
+- [Contributing](#contributing)
 - [License](#license)
 
 ### Why use this?
