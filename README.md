@@ -80,4 +80,8 @@ This tool uses Argon2id to perform some black magic. So even if someone stole yo
 
 I plan to add more to this eventually like maybe a secure password generator or a TUI or something, but I don't have a list of things to add yet. Maybe after using it some I will come up with some stuff we'll see what happens.
 
+**License**
+
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/ManOfGoldForever/Rust-Password-Manager/blob/main/LICENSE) file for details.
+
 **Enjoy :)**
