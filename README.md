@@ -49,7 +49,7 @@ All data lives in a hidden folder in your home directory if you ever need to sta
 - **Linux/Mac:** `~/.my_pass_manager`
 - **Windows:** `%USERPROFILE%\.my_pass_manager\`
 
-This tool uses Argon2id to derive your encryption key from your master password making brute-force attacks computationally expensive. So even if someone stole your passwords.enc file from your computer, they would not be able to read it without your master password. So if someone happens to steal your passwords.enc file from your computer you have bigger problems than them figuring out your passwords.
+This tool uses Argon2id to perform some black magic. So even if someone stole your passwords.enc file from your computer, they would not be able to read it without your master password. Basically, if someone manages to steal your passwords.enc file from your computer you have bigger problems than them figuring out your passwords.
 
 **Future Plans**
 
