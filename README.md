@@ -18,7 +18,7 @@ A fast, secure, and lightweight password manager CLI built entirely in Rust. No 
 - **Linux/Mac:** Open a terminal in the extracted folder and run: `chmod +x linux-mac-install.sh && ./linux-mac-install.sh`
 - **Windows:** Right-click windows-install.ps1 and select `Run with PowerShell`
 
-  This script moves the pm binary to your "PATH" so you can use it anywhere by typing pm in a terminal.
+This script moves the pm binary to your "PATH" so you can use it anywhere by typing pm in a terminal.
 
 **Uninstallation**
 
@@ -27,7 +27,7 @@ If for whatever reason you want to remove this perfect and amazing tool along wi
 - **Linux/Mac:** Open a terminal in the extracted folder and run: `chmod +x linux-mac-uninstall.sh && ./linux-mac-uninstall.sh`
 - **Windows:** Right-click windows-uninstall.ps1 and select `Run with PowerShell`
 
-  > [!WARNING] This will delete all saved passwords, your master password, and everything else along with the tool!
+> [!WARNING] This will delete all saved passwords, your master password, and everything else along with the tool!
 
 **Usage**
 
@@ -49,7 +49,7 @@ All data lives in a hidden folder in your home directory if you ever need to sta
 - **Linux/Mac:** `~/.my_pass_manager`
 - **Windows:** `%USERPROFILE%\.my_pass_manager\`
 
-  This tool uses Argon2id to derive your encryption key from your master password making brute-force attacks computationally expensive. So even if someone stole your passwords.enc file from your computer, they would not be able to read it without your master password. So if someone happens to steal your passwords.enc file from your computer you have bigger problems than them figuring out your passwords.
+This tool uses Argon2id to derive your encryption key from your master password making brute-force attacks computationally expensive. So even if someone stole your passwords.enc file from your computer, they would not be able to read it without your master password. So if someone happens to steal your passwords.enc file from your computer you have bigger problems than them figuring out your passwords.
 
 **Future Plans**
 
