@@ -20,6 +20,31 @@ A fast, secure, and lightweight password manager CLI built entirely in Rust. No 
 
 This script moves the pm binary to your "PATH" so you can use it anywhere by typing pm in a terminal.
 
+**Build from Source**
+
+If you would rather compile the binary yourself rather than using pre-built releases, follow these steps:
+
+1. **Prerequisites**
+
+You will need the Rust toolchain installed.
+
+- visit [rustup.rs](https://rustup.rs/) and follow the instructions for your OS.
+  > [!WARNING] Linux users may need build essentials (like `gcc` or `make`) installed using their package manager to compile Rust crates.
+
+2. **Clone and Build**
+
+Use the following code in the terminal.
+`git clone https://github.com/ManOfGoldForever/Rust-Password-Manager.git`
+`cd Rust-Password-Manager`
+`cargo build --release`
+
+3. **Locate Binary**
+
+After the build finishes your executable will be located at:
+
+- **Linux/Mac:** `target/release/pm`
+- **Windows:** `target/release/pm.exe`
+
 **Uninstallation**
 
 If for whatever reason you want to remove this perfect and amazing tool along with permanently deleting your encrypted vault:
