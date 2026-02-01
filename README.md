@@ -29,7 +29,7 @@ If you would rather compile the binary yourself rather than using pre-built rele
 You will need the Rust toolchain installed.
 
 - visit [rustup.rs](https://rustup.rs/) and follow the instructions for your OS.
-  > [!WARNING] Linux users may need build essentials (like `gcc` or `make`) installed using their package manager to compile Rust crates.
+  > **WARNING!** Linux users may need build essentials (like `gcc` or `make`) installed using their package manager to compile Rust crates.
 
 2. **Clone and Build**
 
@@ -52,13 +52,13 @@ If for whatever reason you want to remove this perfect and amazing tool along wi
 - **Linux/Mac:** Open a terminal in the extracted folder and run: `chmod +x linux-mac-uninstall.sh && ./linux-mac-uninstall.sh`
 - **Windows:** Right-click windows-uninstall.ps1 and select `Run with PowerShell`
 
-> [!WARNING] This will delete all saved passwords, your master password, and everything else along with the tool!
+> **WARNING!** This will delete all saved passwords, your master password, and everything else along with the tool!
 
 **Usage**
 
 The first time you run any command you'll be prompted to set a master password.
 
-> [!IMPORTANT] The master password is the only key to access your vault so remember it and don't lose it or you won't be able to access your data.
+> **IMPORTANT!** The master password is the only key to access your vault so remember it and don't lose it or you won't be able to access your data.
 
 Enter any of the following commands into a terminal of your choice.
 
