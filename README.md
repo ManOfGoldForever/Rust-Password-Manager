@@ -1,4 +1,5 @@
 **pm 🦀**
+
 A fast, secure, and lightweight password manager CLI built entirely in Rust. No cloud, no tracking, just local encryption.
 
 **Why use this?**
@@ -19,6 +20,7 @@ A fast, secure, and lightweight password manager CLI built entirely in Rust. No 
   This script moves the pm binary to your PATH so you can use it anywhere by typing pm in a terminal.
 
 **Uninstallation**
+
 If for whatever reason you want to remove this perfect and amazing tool along with permanently deleting your encrypted vault:
 
 - **Linux/Mac:** Open a terminal in the extracted folder and run: '''chmod +x linux-mac-uninstall.sh && ./linux-mac-uninstall.sh'''
@@ -26,6 +28,7 @@ If for whatever reason you want to remove this perfect and amazing tool along wi
   > [!WARNING] This will delete all saved passwords, your master password, and everything else along with the tool!
 
 **Usage**
+
 The first time you run any command you'll be prompted to set a master password.
 
 > [!IMPORTANT] The master password is the only key to access your vault so remember it and don't lose it or you won't be able to access your data.
@@ -38,6 +41,7 @@ Enter any of the following commands into a terminal of your choice.
 - **Delete an entry:** '''pm delete github''' (Or any name you want instead of github) this will permanently delete the entry with the name you type.
 
 **Security and Data**
+
 All data lives in a hidden folder in your home directory if you ever need to start from scratch you could delete it:
 
 - **Linux/Mac:** '''~/.my_pass_manager'''
@@ -45,6 +49,7 @@ All data lives in a hidden folder in your home directory if you ever need to sta
   This tool uses Argon2id to derive your encryption key from your master password making brute-force attacks computationally expensive. So even if someone stole your passwords.enc file from your computer, they would not be able to read it without your master password. So if someone happens to steal your passwords.enc file from your computer you have bigger problems than them figuring out your passwords.
 
 **Future Plans**
+
 I plan to add more to this eventually like maybe a secure password generator or a TUI or something, but I don't have a list of things to add yet. Maybe after using it some I will come up with some stuff we'll see what happens.
 
 **Enjoy :)**
