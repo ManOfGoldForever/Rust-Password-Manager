@@ -71,12 +71,21 @@ The first time you run any command you'll be prompted to set a master password.
 
 > **IMPORTANT!** The master password is the only key to access your vault so remember it and don't lose it or you won't be able to access your data.
 
-Enter any of the following commands into a terminal of your choice.
+```rust
+A simple password manager CLI
 
-- **Add a password:** `pm add github` (Or any name you want instead of github) after this you will be prompted to enter and confirm a password.
-- **Get a password:** `pm get github` (Or any name you want instead of github) this will print the name and password to the terminal, just a reminder Ctrl+Alt+C is how you copy from the terminal.
-- **List names of saved passwords:** `pm list` this will list only the names of all passwords you have saved.
-- **Delete an entry:** `pm delete github` (Or any name you want instead of github) this will permanently delete the entry with the name you type.
+Usage: pm <COMMAND>
+
+Commands:
+  add     Create a new password with a name
+  get     Get an already made password using its name
+  delete  Delete an already made password using its name
+  list    Lists the names of all created passwords
+  help    Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+```
 
 ### Security and Data
 
