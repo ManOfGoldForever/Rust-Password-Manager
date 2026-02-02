@@ -11,6 +11,13 @@ use zeroize::Zeroize;
 fn main() {
     let cli: Cli = Cli::parse();
 
+    if cli.command.is_none() {
+        print_banner();
+        println!("Welcome to pm - The Rust Password Manager");
+        println!("Use 'pm --help' to see available commands.");
+        return;
+    }
+
     let home_str = std::env::var("HOME")
         .or_else(|_| std::env::var("USERPROFILE"))
         .expect("Could not find home directory");
@@ -76,7 +83,7 @@ fn main() {
     let mut passwords = storage::load_passwords(file_str, &encryption_key);
 
     match &cli.command {
-        Commands::Add(args) => {
+        Some(Commands::Add(args)) => {
             print!("Enter password for {} : ", args.name);
             std::io::stdout().flush().expect("Flush failed");
             let mut p1 = read_password().expect("Failed to read password");
@@ -95,14 +102,14 @@ fn main() {
             p1.zeroize();
             p2.zeroize();
         }
-        Commands::Get(args) => match passwords.get(&args.name) {
+        Some(Commands::Get(args)) => match passwords.get(&args.name) {
             Some(pw) => println!("Password for {} : {}", args.name, pw),
             None => println!("No password found for '{}'", args.name),
         },
-        Commands::Delete(args) => {
+        Some(Commands::Delete(args)) => {
             storage::delete_password(file_str, &args.name, &encryption_key);
         }
-        Commands::List => {
+        Some(Commands::List) => {
             if passwords.is_empty() {
                 println!("No passwords saved yet!");
             } else {
@@ -113,6 +120,7 @@ fn main() {
                 println!("-----------------------");
             }
         }
+        None => unreachable!(),
     }
 
     encryption_key.zeroize();
@@ -120,4 +128,19 @@ fn main() {
     for (_, v) in passwords.iter_mut() {
         v.zeroize();
     }
+}
+
+fn print_banner() {
+    let banner = r#"
+        ████████  █████████████           _~^~^~_
+        ▒▒███▒▒███▒▒███▒▒███▒▒███     \) /  o o  \ (/
+         ▒███ ▒███ ▒███ ▒███ ▒███       '_   -   _'
+         ▒███ ▒███ ▒███ ▒███ ▒███       / '-----' \
+         ▒███████  █████▒███ █████
+         ▒███▒▒▒  ▒▒▒▒▒ ▒▒▒ ▒▒▒▒▒
+         ▒███
+         █████
+        ▒▒▒▒▒
+        "#;
+    println!("{}", banner);
 }

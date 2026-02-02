@@ -3,9 +3,20 @@ use clap::{Args, Parser, Subcommand};
 #[derive(Parser)]
 #[command(name = "PassManager")]
 #[command(about = " A simple password manager CLI", long_about = None)]
+#[command(before_help = r#"
+ ████████  █████████████          _~^~^~_
+▒▒███▒▒███▒▒███▒▒███▒▒███     \) /  o o  \ (/
+ ▒███ ▒███ ▒███ ▒███ ▒███       '_   -   _'
+ ▒███ ▒███ ▒███ ▒███ ▒███       / '-----' \
+ ▒███████  █████▒███ █████
+ ▒███▒▒▒  ▒▒▒▒▒ ▒▒▒ ▒▒▒▒▒
+ ▒███
+ █████
+▒▒▒▒▒
+"#)]
 pub struct Cli {
     #[command(subcommand)]
-    pub command: Commands,
+    pub command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
